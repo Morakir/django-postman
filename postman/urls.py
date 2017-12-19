@@ -91,6 +91,7 @@ from __future__ import unicode_literals
 from django import VERSION
 from django.conf import settings
 from django.conf.urls import url
+
 if VERSION < (1, 10):
     from django.core.urlresolvers import reverse_lazy
 else:
@@ -98,12 +99,25 @@ else:
 if getattr(settings, 'POSTMAN_I18N_URLS', False):
     from django.utils.translation import pgettext_lazy
 else:
-    def pgettext_lazy(c, m): return m
+    def pgettext_lazy(c, m):
+        return m
 from django.views.generic.base import RedirectView
 
 from .views import (InboxView, SentView, ArchivesView, TrashView,
-        WriteView, ReplyView, MessageView, ConversationView,
-        ArchiveView, DeleteView, UndeleteView, MarkReadView, MarkUnreadView)
+                    WriteView, ReplyView, MessageView, ConversationView,
+                    ArchiveView, DeleteView, UndeleteView, MarkReadView, MarkUnreadView)
+
+
+def mod1(message):
+    if 'admin' in message:
+        return True
+
+
+def mod2(message):
+    if 'rejected' in message:
+        return False, 'Included forbbiden word'
+    return True
+
 
 app_name = 'postman'
 urlpatterns = [
@@ -115,11 +129,14 @@ urlpatterns = [
     url(pgettext_lazy('postman_url', r'^archives/(?:(?P<option>m)/)?$'), ArchivesView.as_view(), name='archives'),
     # Translators: keep consistency of the <option> parameter with the translation for 'm'
     url(pgettext_lazy('postman_url', r'^trash/(?:(?P<option>m)/)?$'), TrashView.as_view(), name='trash'),
-    url(pgettext_lazy('postman_url', r'^write/(?:(?P<recipients>[^/#]+)/)?$'), WriteView.as_view(), name='write'),
-    url(pgettext_lazy('postman_url', r'^reply/(?P<message_id>[\d]+)/$'), ReplyView.as_view(), name='reply'),
+    url(pgettext_lazy('postman_url', r'^write/(?:(?P<recipients>[^/#]+)/)?$'), WriteView.as_view(auto_moderators=()),
+        name='write'),
+    url(pgettext_lazy('postman_url', r'^reply/(?P<message_id>[\d]+)/$'), ReplyView.as_view(auto_moderators=()),
+        name='reply'),
     url(pgettext_lazy('postman_url', r'^view/(?P<message_id>[\d]+)/$'), MessageView.as_view(), name='view'),
     # Translators: 't' stands for 'thread'
-    url(pgettext_lazy('postman_url', r'^view/t/(?P<thread_id>[\d]+)/$'), ConversationView.as_view(), name='view_conversation'),
+    url(pgettext_lazy('postman_url', r'^view/t/(?P<thread_id>[\d]+)/$'), ConversationView.as_view(),
+        name='view_conversation'),
     url(pgettext_lazy('postman_url', r'^archive/$'), ArchiveView.as_view(), name='archive'),
     url(pgettext_lazy('postman_url', r'^delete/$'), DeleteView.as_view(), name='delete'),
     url(pgettext_lazy('postman_url', r'^undelete/$'), UndeleteView.as_view(), name='undelete'),
