@@ -109,12 +109,12 @@ from .views import (InboxView, SentView, ArchivesView, TrashView,
 
 
 def mod1(message):
-    if 'admin' in message.body:
+    if 'admin@test' in message.body:
         return 100
 
 
 def mod2(message):
-    if 'rejected' in message.body:
+    if 'rejected@test' in message.body:
         return 0, 'Included forbidden word'
     return True
 
