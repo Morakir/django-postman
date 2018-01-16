@@ -109,13 +109,13 @@ from .views import (InboxView, SentView, ArchivesView, TrashView,
 
 
 def mod1(message):
-    if 'admin' in message:
-        return True
+    if 'admin' in message.body:
+        return 100
 
 
 def mod2(message):
-    if 'rejected' in message:
-        return False, 'Included forbbiden word'
+    if 'rejected' in message.body:
+        return 0, 'Included forbidden word'
     return True
 
 
@@ -129,9 +129,11 @@ urlpatterns = [
     url(pgettext_lazy('postman_url', r'^archives/(?:(?P<option>m)/)?$'), ArchivesView.as_view(), name='archives'),
     # Translators: keep consistency of the <option> parameter with the translation for 'm'
     url(pgettext_lazy('postman_url', r'^trash/(?:(?P<option>m)/)?$'), TrashView.as_view(), name='trash'),
-    url(pgettext_lazy('postman_url', r'^write/(?:(?P<recipients>[^/#]+)/)?$'), WriteView.as_view(auto_moderators=()),
+    url(pgettext_lazy('postman_url', r'^write/(?:(?P<recipients>[^/#]+)/)?$'),
+        WriteView.as_view(auto_moderators=(mod1, mod2)),
         name='write'),
-    url(pgettext_lazy('postman_url', r'^reply/(?P<message_id>[\d]+)/$'), ReplyView.as_view(auto_moderators=()),
+    url(pgettext_lazy('postman_url', r'^reply/(?P<message_id>[\d]+)/$'),
+        ReplyView.as_view(auto_moderators=(mod1, mod2)),
         name='reply'),
     url(pgettext_lazy('postman_url', r'^view/(?P<message_id>[\d]+)/$'), MessageView.as_view(), name='view'),
     # Translators: 't' stands for 'thread'
