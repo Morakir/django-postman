@@ -130,10 +130,10 @@ urlpatterns = [
     # Translators: keep consistency of the <option> parameter with the translation for 'm'
     url(pgettext_lazy('postman_url', r'^trash/(?:(?P<option>m)/)?$'), TrashView.as_view(), name='trash'),
     url(pgettext_lazy('postman_url', r'^write/(?:(?P<recipients>[^/#]+)/)?$'),
-        WriteView.as_view(auto_moderators=(mod1, mod2)),
+        WriteView.as_view(mod1, mod2),
         name='write'),
     url(pgettext_lazy('postman_url', r'^reply/(?P<message_id>[\d]+)/$'),
-        ReplyView.as_view(auto_moderators=(mod1, mod2)),
+        ReplyView.as_view(mod1, mod2),
         name='reply'),
     url(pgettext_lazy('postman_url', r'^view/(?P<message_id>[\d]+)/$'), MessageView.as_view(), name='view'),
     # Translators: 't' stands for 'thread'
